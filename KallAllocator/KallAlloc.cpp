@@ -1,4 +1,7 @@
 #include "KallAlloc.hpp"
+#include <unistd.h>
+#include <mutex>
+
 
 
 
@@ -10,8 +13,8 @@ void* KAL::Kalloc::operator ()(size_t size)
     header_t* header;
     if(!size)
         return nullptr;
-    unique_lock<mutex> lock{mtx};
-    headers=getFree(size);
+    std::unique_lock<std::mutex> locker{mtx};
+    header=getFree(size);
     if(header)
     {
         header->s.is_free;
@@ -21,10 +24,10 @@ void* KAL::Kalloc::operator ()(size_t size)
     block= sbrk(total_size);
     if(block== (void*)-1)
         return nullptr;
-    header= block;
+    header= (header_t*)block;
     header->s.size= size;
     header->s.next= nullptr;
-    head->sis_free=0;
+    head->s.is_free=0;
     if(!head)
         head=header;
     if(tail)

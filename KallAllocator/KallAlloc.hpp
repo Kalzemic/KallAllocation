@@ -2,7 +2,7 @@
 #include <mutex>
 namespace KAL 
 {
-    union header_t
+    typedef union header_t
 {
     struct 
     {
@@ -15,30 +15,30 @@ namespace KAL
 };
 
 
-typedef union header_t header_t;
+ union header_t *head;
+ union header_t* tail;
 
 
-header* head,tail;
 
 
     class Kalloc
     {
     private:
          
-        std::mutex* mtx;
-        header* getFree(size_t size)
+        std::mutex mtx;
+        header_t* getFree(size_t size)
         {
-            unique_ptr<curr>= head;
+            header_t* curr=head;
             while(curr)
             {
                 if(curr->s.is_free && curr->s.size>=size)
                     return curr;
-                cur=curr->s.next;
+                curr=curr->s.next;
             }
             return nullptr;
         }
     public: 
-        Kalloc(): mtx(new std::mutex) {}
+        Kalloc(): mtx() {}
         void* operator ()(size_t size);
 
     };
